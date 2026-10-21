@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050b14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Moreland Command">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<title>Moreland Command</title>
+<style>
+@font-face{font-family:'Orbitron';src:url(fonts/orbitron-400.ttf);font-weight:400}
+@font-face{font-family:'Orbitron';src:url(fonts/orbitron-700.ttf);font-weight:700}
+@font-face{font-family:'Share Tech Mono';src:url(fonts/sharetechmono.ttf)}
+:root{--cy:#00d4ff;--cy2:#6fd3ff;--dim:rgba(0,212,255,.22);--txt:#c8d6e5;--mut:#7d97a8;--red:#ff3344;--glow:0 0 6px rgba(0,212,255,.6),0 0 18px rgba(0,212,255,.25);--hd:'Orbitron',sans-serif;--mono:'Share Tech Mono',monospace;--sans:-apple-system,'Segoe UI','DejaVu Sans',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:#050b14}
+body{min-height:100vh;color:var(--txt);font-family:var(--mono);background:radial-gradient(ellipse at 50% 0%,#0b1d33 0%,#050b14 70%) fixed;
+padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px) calc(env(safe-area-inset-bottom) + 96px) calc(env(safe-area-inset-left) + 14px)}
+header{text-align:center;padding:4px 0 12px;border-bottom:1px solid var(--dim);margin-bottom:14px}
+.stark svg{width:220px;height:auto}
+h1{font:700 19px var(--hd);letter-spacing:.24em;color:var(--cy);text-shadow:var(--glow);margin-top:6px}
+.sub{font:11px var(--hd);letter-spacing:.35em;color:var(--mut);margin-top:4px}
+.time{font:12px var(--mono);color:var(--cy2);margin-top:6px}
+.panel{position:relative;background:rgba(6,18,38,.7);border:1px solid rgba(0,212,255,.14);padding:14px;margin-bottom:14px}
+.panel::before,.panel::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--cy);filter:drop-shadow(0 0 4px var(--cy))}
+.panel::before{top:-1px;left:-1px;border-right:0;border-bottom:0}.panel::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+h2{font:700 13px var(--hd);letter-spacing:.25em;color:var(--cy);text-shadow:var(--glow);display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--dim);padding-bottom:8px;margin-bottom:10px}
+h2 span{font:11px var(--mono);letter-spacing:.08em;color:var(--mut);text-shadow:none}
+.tog{display:flex;border:1px solid var(--dim);margin-bottom:10px}
+.tog button{flex:1;min-height:44px;font:700 11px var(--hd);letter-spacing:.15em;color:var(--mut);background:none;border:0}
+.tog button.on{color:#050b14;background:var(--cy);box-shadow:var(--glow)}
+.grp{font:700 11px var(--hd);letter-spacing:.2em;color:var(--cy);margin:12px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--dim)}
+.hr{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px dashed rgba(0,212,255,.12);min-height:52px}
+.hr .cl{font-size:11px;color:var(--cy);letter-spacing:.06em}
+.hr .it{font:15px/1.25 var(--sans);color:#e3eef8}.hr .it small{display:block;font:11px var(--mono);color:var(--mut);margin-top:2px}
+.dd{font:700 22px var(--hd);text-align:center;color:#e8fbff;text-shadow:var(--glow);line-height:1}.dd small{display:block;font:400 8px var(--hd);letter-spacing:.2em;color:var(--mut);text-shadow:none;margin-top:3px}
+.u0{background:linear-gradient(90deg,rgba(0,212,255,.14),transparent)}.u0 .dd{color:#fff;text-shadow:0 0 12px #fff,0 0 22px var(--cy)}.u1 .dd{color:var(--cy2)}.u2 .dd{color:#6e9cb8;text-shadow:none}.od .dd{color:var(--red)}
+.brief p{font:15px/1.5 var(--sans);margin-bottom:9px}
+ol.tasks{list-style:none;counter-reset:t}ol.tasks li{counter-increment:t;display:flex;gap:10px;font:14.5px/1.35 var(--sans);padding:9px 0;border-bottom:1px dashed rgba(0,212,255,.1)}
+ol.tasks li::before{content:counter(t,decimal-leading-zero);color:var(--cy);font-family:var(--mono);min-width:22px}
+.ev{list-style:none}.ev li{display:grid;grid-template-columns:86px 1fr;gap:8px;padding:9px 0;border-bottom:1px dashed rgba(0,212,255,.1)}
+.ev b{font-weight:400;font-size:12px;color:var(--cy)}.ev span{font:14.5px var(--sans);color:#e3eef8}.ev small{display:block;font:11px var(--mono);color:var(--mut)}
+/* reactor */
+#rx{position:relative;width:100%;aspect-ratio:1/1.32;overflow:hidden;touch-action:pan-y}
+#rx svg{position:absolute;left:50%;top:50%;width:62%;transform:translate(-50%,-50%);overflow:visible}
+.spin{transform-origin:300px 300px;animation:rot linear infinite}.rev{animation-direction:reverse}@keyframes rot{to{transform:rotate(360deg)}}
+.core{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#e8fbff 0%,#66d9ff 18%,rgba(0,212,255,.55) 40%,rgba(0,212,255,.08) 70%,transparent 72%);animation:breath 4s ease-in-out infinite}
+@keyframes breath{50%{filter:brightness(1.25)}}
+.node{position:absolute;transform:translate(-50%,-14px);text-align:center;width:88px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.node .hex{width:14px;height:14px;margin:0 auto 4px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--cy);box-shadow:0 0 10px var(--cy)}
+.node .nm{font:700 9.5px var(--hd);letter-spacing:.08em;color:#e8fbff;background:rgba(5,11,20,.9);border:1px solid var(--dim);padding:4px 3px}
+.node .st{font:11px/1.15 var(--sans);color:var(--cy2);text-shadow:0 0 6px rgba(0,212,255,.55);margin-top:3px}
+.node.j{left:50%;top:50%;transform:translate(-50%,calc(-50% + 0px));z-index:3}.node.j .hex{display:none}.node.j .nm{font-size:11px;border-color:var(--cy);box-shadow:var(--glow)}
+.hint{font-size:11px;color:var(--mut);text-align:center;margin-top:4px}
+/* card */
+.scrim{position:fixed;inset:0;background:rgba(2,6,12,.6);z-index:40;display:flex;align-items:center;justify-content:center;padding:24px}
+.scrim[hidden]{display:none}
+.card{position:relative;width:100%;max-width:360px;padding:20px 20px 18px;background:rgba(4,20,40,.97);border:1px solid var(--cy);box-shadow:var(--glow),inset 0 0 24px rgba(0,212,255,.15);clip-path:polygon(0 0,92% 0,100% 10%,100% 100%,8% 100%,0 90%)}
+.card h3{font:700 19px var(--hd);letter-spacing:.18em;color:#e8fbff;text-shadow:var(--glow);margin-bottom:6px;padding-right:44px}
+.card .s{font:600 15px var(--sans);color:var(--cy2);text-shadow:0 0 6px rgba(0,212,255,.5);margin-bottom:10px}
+.card .r{font:15.5px/1.45 var(--sans)}
+.card .x{position:absolute;right:20px;top:12px;width:44px;height:44px;background:none;border:1px solid var(--dim);color:var(--cy);font-size:18px}
+/* buttons */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:1.1fr 1.6fr;gap:10px;background:linear-gradient(transparent,#050b14 30%);
+padding:18px calc(env(safe-area-inset-right) + 14px) calc(env(safe-area-inset-bottom) + 12px) calc(env(safe-area-inset-left) + 14px)}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;min-height:56px;font:700 11px var(--hd);letter-spacing:.1em;color:var(--cy);background:rgba(6,18,38,.95);border:1px solid var(--cy);text-decoration:none;box-shadow:inset 0 0 14px rgba(0,212,255,.15)}
+.btn.big{font-size:16px;color:#e8fbff;text-shadow:var(--glow);background:rgba(0,212,255,.16);box-shadow:var(--glow),inset 0 0 18px rgba(0,212,255,.25)}
+footer{text-align:center;font-size:11px;color:var(--mut);letter-spacing:.06em;line-height:1.6;padding:6px 0}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 92px);padding:12px 14px;background:rgba(4,20,40,.97);border:1px solid var(--cy);color:#e8fbff;font:14px var(--sans);z-index:50}
+.lock{position:fixed;inset:0;z-index:60;background:radial-gradient(ellipse at 50% 30%,#0b1d33,#050b14 70%);display:flex;align-items:center;justify-content:center;padding:24px}.lock[hidden]{display:none}
+.lk{display:flex;flex-direction:column;gap:14px}.lk h3{padding-right:0}
+#pw{min-height:50px;font:17px var(--sans);color:#e8fbff;background:rgba(0,212,255,.06);border:1px solid var(--cy);padding:0 14px;outline:none}
+.rem{display:flex;align-items:center;gap:10px;min-height:44px;font:15px var(--sans);color:var(--txt)}.rem input{width:22px;height:22px;accent-color:#00d4ff}
+.lmsg{font:14px var(--sans);color:var(--cy2);min-height:18px}
+body.locked>section,body.locked>footer,body.locked>.dock{visibility:hidden}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body class="locked">
+<header>
+ <div class="stark"><svg viewBox="0 0 300 54"><defs><linearGradient id="met" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#cfefff"/><stop offset=".55" stop-color="#7fd6ff"/><stop offset="1" stop-color="#e8fbff"/></linearGradient><filter id="sg"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+ <text x="150" y="32" text-anchor="middle" font-family="Orbitron" font-weight="700" font-size="34" fill="url(#met)" stroke="#00d4ff" stroke-width=".6" filter="url(#sg)" transform="skewX(-10) translate(4 0)" textLength="282" lengthAdjust="spacingAndGlyphs">STARK</text>
+ <line x1="14" y1="40" x2="286" y2="40" stroke="#00d4ff" stroke-width="1.2" opacity=".85"/><text x="150" y="52" text-anchor="middle" font-family="Orbitron" font-size="10" fill="#66d9ff" textLength="272" lengthAdjust="spacing">INDUSTRIES</text></svg></div>
+ <h1>MORELAND COMMAND</h1><div class="sub">PERSONAL AI TEAM</div><div class="time" id="now"></div>
+</header>
+<section class="panel"><h2>HOMEWORK <span id="hwcount"></span></h2>
+ <div class="tog"><button data-m="class">BY CLASS</button><button data-m="due" class="on">BY DUE DATE</button></div><div id="hwlist"></div></section>
+<section class="panel"><h2>TODAY'S BRIEFING <span id="bdate">AGENDA</span></h2><div class="brief" id="brief"></div></section>
+<section class="panel"><h2>THE TEAM <span>TAP AN ORB</span></h2><div id="rx">
+ <svg viewBox="0 0 600 600" fill="none" stroke="#00d4ff"><g class="spin" style="animation-duration:60s"><circle cx="300" cy="300" r="290" stroke-width="3" stroke-opacity=".6" stroke-dasharray="180 40 60 40 120 50"/></g>
+ <g class="spin rev" style="animation-duration:20s"><circle cx="300" cy="300" r="220" stroke-width="8" stroke-opacity=".45" stroke-dasharray="40 14"/></g>
+ <g class="spin" style="animation-duration:12s"><circle cx="300" cy="300" r="180" stroke-width="2" stroke-dasharray="120 540"/></g><circle cx="300" cy="300" r="160" stroke-opacity=".35"/></svg>
+ <div class="core"></div><div id="nodes"></div></div><div class="hint">Tap a teammate for details · drag to move · <a href="#" id="reset" style="color:var(--cy2)">reset</a></div></section>
+<section class="panel"><h2>TEAM TASKS <span id="tcount"></span></h2><ol class="tasks" id="tasks"></ol></section>
+<section class="panel"><h2>NEXT 7 DAYS <span>OUTLOOK</span></h2><ul class="ev" id="events"></ul></section>
+<footer>J.A.R.V.I.S. · built by Trey Moreland &amp; team<br><span id="synced">Loading…</span><br><a href="#" id="lockbtn" style="color:var(--cy2)">Lock &amp; forget this device</a></footer>
+<nav class="dock"><a class="btn" href="https://outlook.live.com/calendar/" target="_blank" rel="noopener">📅 CALENDAR</a><a class="btn big" id="getj" href="grokbot://">💬 GET JARVIS</a></nav>
+<div class="scrim" id="scrim" hidden><div class="card" role="dialog" aria-modal="true"><button class="x" aria-label="Close">✕</button><h3 id="cn"></h3><div class="s" id="cs"></div><div class="r" id="cr"></div></div></div>
+<div class="toast" id="toast" hidden></div>
+<div class="lock" id="lock" hidden><form id="lform" class="card lk" autocomplete="on"><h3>ACCESS CONTROL</h3><div class="s">Moreland Command is locked.</div>
+<input type="text" name="username" value="Moreland Command" autocomplete="username" hidden>
+<input id="pw" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password">
+<label class="rem"><input type="checkbox" id="rem" checked> Remember on this device</label>
+<button class="btn big" id="lbtn" type="submit">UNLOCK</button><div class="lmsg" id="lmsg"></div></form></div>
+<script>
+const CT={timeZone:'America/Chicago'},$=id=>document.getElementById(id);
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let team=[],JARVIS=[];
+// card
+function show(t){$('cn').textContent=t[0];$('cs').textContent=t[1];$('cr').textContent=t[2];$('scrim').hidden=false;}
+$('scrim').onclick=e=>{if(e.target.id==='scrim'||e.target.classList.contains('x'))$('scrim').hidden=true;};
+// reactor (ellipse layout, drag)
+const rx=$('rx'),nd=$('nodes');let pos=[],spin=0,drag=null,idle=0;
+const home=()=>team.map((_,i)=>({a:-90+i*40,R:1}));
+function place(){const W=rx.clientWidth,H=rx.clientHeight;team.forEach((t,i)=>{const a=(pos[i].a+spin)*Math.PI/180,el=nd.children[i];
+ el.style.left=W/2+pos[i].R*(W/2-48)*Math.cos(a)+'px';el.style.top=H/2+pos[i].R*(H/2-34)*Math.sin(a)+'px';});}
+function initTeam(){nd.innerHTML='';const jn=document.createElement('div');jn.className='node j';jn.innerHTML='<div class="hex"></div><div class="nm">JARVIS</div><div class="st">Chief of Staff</div>';jn.onclick=()=>show(JARVIS);
+team.forEach((t,i)=>{const d=document.createElement('div');d.className='node';d.innerHTML=`<div class="hex"></div><div class="nm">${t[0]}</div><div class="st">${t[1]}</div>`;nd.appendChild(d);
+ d.addEventListener('pointerdown',e=>{d.setPointerCapture(e.pointerId);drag={i,x:e.clientX,y:e.clientY,m:false};});
+ d.addEventListener('pointermove',e=>{if(!drag||drag.i!==i)return;if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8)drag.m=true;if(!drag.m)return;
+  const r=rx.getBoundingClientRect(),x=(e.clientX-r.left-r.width/2)/(r.width/2-48),y=(e.clientY-r.top-r.height/2)/(r.height/2-34);
+  pos[i]={a:Math.atan2(y,x)*180/Math.PI-spin,R:Math.max(.45,Math.min(1,Math.hypot(x,y)))};place();});
+ d.addEventListener('pointerup',()=>{const m=drag&&drag.m;drag=null;idle=performance.now();if(!m)show(t);});
+ d.addEventListener('pointercancel',()=>{drag=null;});});
+rx.appendChild(jn);pos=home();place();}
+addEventListener('resize',()=>team.length&&place());
+$('reset').onclick=e=>{e.preventDefault();pos=home();spin=0;place();};
+let last=performance.now();(function loop(t){const dt=t-last;last=t;if(team.length&&!drag&&t-idle>1500&&!matchMedia('(prefers-reduced-motion:reduce)').matches){spin=(spin+dt*.0015)%360;place();}requestAnimationFrame(loop);})(last);
+// homework
+let HW=[],mode='due';
+function days(d){if(!d)return null;const n=new Date(new Date().toLocaleDateString('en-US',CT));return Math.round((new Date(d.slice(0,10)+'T00:00')-n)/864e5);}
+const fmt=d=>{const x=new Date(d);return x.toLocaleDateString('en-US',{...CT,weekday:'short',month:'short',day:'numeric'}).toUpperCase()+' · '+x.toLocaleTimeString('en-US',{...CT,hour:'numeric',minute:'2-digit'});};
+function row(h,showCl){const n=days(h.due),u=n===null?'u2':n<0?'od':n<=3?'u0':n<=7?'u1':'u2';
+ return `<div class="hr ${u}"><div>${showCl?`<div class="cl">${esc(h.class)}</div>`:''}<div class="it">${esc(h.title)}<small>${h.due?fmt(h.due):'NO DUE DATE'}</small></div></div><div class="dd">${n===null?'–':Math.abs(n)}<small>${n===null?'TO DO':n<0?'LATE':'LEFT'}</small></div></div>`;}
+function renderHW(){const s=[...HW].sort((a,b)=>(!a.due)-(!b.due)||(a.due||'').localeCompare(b.due||''));let h='';
+ if(mode==='due')h=s.map(x=>row(x,true)).join('');else[...new Set(s.map(x=>x.class))].sort().forEach(c=>{h+=`<div class="grp">${esc(c)}</div>`+s.filter(x=>x.class===c).map(x=>row(x,false)).join('');});
+ $('hwlist').innerHTML=h||'<p>No homework on the list.</p>';$('hwcount').textContent=HW.length+' OPEN';
+ document.querySelectorAll('.tog button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));}
+document.querySelectorAll('.tog button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;renderHW();});
+function render(D){HW=D.homework||[];renderHW();
+ const B=D.briefing||{};$('brief').innerHTML=(B.paragraphs||[]).map(p=>`<p>${esc(p)}</p>`).join('')||'<p>No briefing yet today.</p>';
+ if(B.date)$('bdate').textContent=new Date(B.date+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
+ const T=D.tasks||[];$('tcount').textContent=T.length+' OPEN';$('tasks').innerHTML=T.map(t=>`<li>${esc(t.text)}</li>`).join('');
+ const E=D.events||[],tm=d=>new Date(d).toLocaleTimeString('en-US',{...CT,hour:'numeric',minute:'2-digit'});
+ $('events').innerHTML=E.length?E.map(e=>`<li><b>${new Date(e.start).toLocaleDateString('en-US',{...CT,weekday:'short',month:'short',day:'numeric'}).toUpperCase()}</b><span>${esc(e.title)}<small>${e.allDay?'ALL DAY':tm(e.start)+'–'+tm(e.end)}</small></span></li>`).join(''):'<li><span>Nothing else on the calendar.</span></li>';
+ $('synced').textContent='Last synced '+(D.updated_label||'?');}
+// ---- encrypted data: status.enc = AES-256-GCM, key = PBKDF2-SHA256(password, salt, iter) ----
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),ub64=a=>btoa(String.fromCharCode(...new Uint8Array(a)));
+let KEY=null,KSALT=null;
+async function derive(pw,salt,iter){const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:b64(salt),iterations:iter},base,{name:'AES-GCM',length:256},true,['decrypt']);}
+async function fetchEnc(){const r=await fetch('status.enc',{cache:'no-store'});if(!r.ok)throw new Error('fetch');return r.json();}
+async function decrypt(E,key){const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(E.iv)},key,b64(E.ct));return JSON.parse(new TextDecoder().decode(pt));}
+let unlocked=false;
+function apply(P){if(!unlocked){team=P.team;JARVIS=P.jarvis;initTeam();unlocked=true;}render(P.status);document.body.classList.remove('locked');$('lock').hidden=true;}
+async function load(){let E;try{E=await fetchEnc();}catch(e){$('synced').textContent='Offline · no data cached yet';return;}
+ if(!KEY){const raw=localStorage.getItem('mc_key');if(raw){const k=JSON.parse(raw);if(k.salt===E.salt){KEY=await crypto.subtle.importKey('jwk',k.jwk,{name:'AES-GCM'},true,['decrypt']);KSALT=k.salt;}}}
+ if(KEY&&KSALT===E.salt){try{apply(await decrypt(E,KEY));return;}catch(e){KEY=null;localStorage.removeItem('mc_key');}}
+ showLock();}
+function showLock(msg){document.body.classList.add('locked');$('lock').hidden=false;$('lmsg').textContent=msg||'';setTimeout(()=>$('pw').focus(),50);}
+$('lform').onsubmit=async e=>{e.preventDefault();const pw=$('pw').value;if(!pw)return;$('lbtn').disabled=true;$('lmsg').textContent='Unlocking…';
+ try{const E=await fetchEnc(),key=await derive(pw,E.salt,E.iter),P=await decrypt(E,key);KEY=key;KSALT=E.salt;
+  if($('rem').checked)localStorage.setItem('mc_key',JSON.stringify({salt:E.salt,jwk:await crypto.subtle.exportKey('jwk',key)}));else localStorage.removeItem('mc_key');
+  $('pw').value='';apply(P);}catch(err){showLock('Wrong password, or no connection. Try again.');}finally{$('lbtn').disabled=false;}};
+$('lockbtn').onclick=e=>{e.preventDefault();localStorage.removeItem('mc_key');KEY=null;location.reload();};
+load();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&unlocked)load();});
+function tick(){$('now').textContent=new Date().toLocaleString('en-US',{...CT,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).toUpperCase()+' CT';}tick();setInterval(tick,30000);
+// Get Jarvis: try the grokbot:// app link; if the page is still visible after 1.5 s, the app didn't open, so show a hint (no other action).
+$('getj').addEventListener('click',()=>{setTimeout(()=>{if(!document.hidden){const t=$('toast');t.textContent='If Grok Bot didn\u2019t open, open the Grok Bot app and choose Jarvis.';t.hidden=false;setTimeout(()=>t.hidden=true,5000);}},1500);});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>

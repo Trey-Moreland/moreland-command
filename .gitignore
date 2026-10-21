@@ -1,0 +1,8 @@
+# never publish plaintext or tooling
+status.json
+*.py
+team.json
+.salt
+.env
+*.env
+shot*.png
