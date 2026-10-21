@@ -70,6 +70,11 @@ footer{text-align:center;font-size:11px;color:var(--mut);letter-spacing:.06em;li
 .rem{display:flex;align-items:center;gap:10px;min-height:44px;font:15px var(--sans);color:var(--txt)}.rem input{width:22px;height:22px;accent-color:#00d4ff}
 .lmsg{font:14px var(--sans);color:var(--cy2);min-height:18px}
 body.locked>section,body.locked>footer,body.locked>.dock{visibility:hidden}
+.player{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:10px;border:1px solid var(--dim);background:rgba(0,212,255,.05)}
+.pbtn{flex:none;width:52px;height:52px;border-radius:50%;border:1px solid var(--cy);background:rgba(0,212,255,.14);color:#e8fbff;font-size:20px;box-shadow:var(--glow)}
+.pmeta{flex:1;min-width:0}.plabel{font:700 11px var(--hd);letter-spacing:.16em;color:var(--cy);margin-bottom:8px}.plabel small{font:11px var(--mono);letter-spacing:.05em;color:var(--mut)}
+.pbar{height:6px;background:rgba(0,212,255,.15);position:relative;cursor:pointer}.pbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--cy);box-shadow:0 0 8px var(--cy)}
+.ptime{font:12px var(--mono);color:var(--mut);min-width:42px;text-align:right}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body class="locked">
 <header>
@@ -80,7 +85,8 @@ body.locked>section,body.locked>footer,body.locked>.dock{visibility:hidden}
 </header>
 <section class="panel"><h2>HOMEWORK <span id="hwcount"></span></h2>
  <div class="tog"><button data-m="class">BY CLASS</button><button data-m="due" class="on">BY DUE DATE</button></div><div id="hwlist"></div></section>
-<section class="panel"><h2>TODAY'S BRIEFING <span id="bdate">AGENDA</span></h2><div class="brief" id="brief"></div></section>
+<section class="panel"><h2>TODAY'S BRIEFING <span id="bdate">AGENDA</span></h2><div class="player"><button id="play" class="pbtn" aria-label="Play briefing">▶</button><div class="pmeta"><div class="plabel" id="plabel">PLAY BRIEFING</div><div class="pbar"><i id="pfill"></i></div></div><span class="ptime" id="ptime"></span></div>
+<audio id="aud" preload="none" playsinline></audio><div class="brief" id="brief"></div></section>
 <section class="panel"><h2>THE TEAM <span>TAP AN ORB</span></h2><div id="rx">
  <svg viewBox="0 0 600 600" fill="none" stroke="#00d4ff"><g class="spin" style="animation-duration:60s"><circle cx="300" cy="300" r="290" stroke-width="3" stroke-opacity=".6" stroke-dasharray="180 40 60 40 120 50"/></g>
  <g class="spin rev" style="animation-duration:20s"><circle cx="300" cy="300" r="220" stroke-width="8" stroke-opacity=".45" stroke-dasharray="40 14"/></g>
@@ -133,7 +139,7 @@ function renderHW(){const s=[...HW].sort((a,b)=>(!a.due)-(!b.due)||(a.due||'').l
  document.querySelectorAll('.tog button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));}
 document.querySelectorAll('.tog button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;renderHW();});
 function render(D){HW=D.homework||[];renderHW();
- const B=D.briefing||{};$('brief').innerHTML=(B.paragraphs||[]).map(p=>`<p>${esc(p)}</p>`).join('')||'<p>No briefing yet today.</p>';
+ const B=D.briefing||{};if(B.date!==BDATE){BDATE=B.date||'';AUDIO_OK=null;prepAudioLater();}$('brief').innerHTML=(B.paragraphs||[]).map(p=>`<p>${esc(p)}</p>`).join('')||'<p>No briefing yet today.</p>';
  if(B.date)$('bdate').textContent=new Date(B.date+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
  const T=D.tasks||[];$('tcount').textContent=T.length+' OPEN';$('tasks').innerHTML=T.map(t=>`<li>${esc(t.text)}</li>`).join('');
  const E=D.events||[],tm=d=>new Date(d).toLocaleTimeString('en-US',{...CT,hour:'numeric',minute:'2-digit'});
@@ -158,6 +164,26 @@ $('lform').onsubmit=async e=>{e.preventDefault();const pw=$('pw').value;if(!pw)r
   if($('rem').checked)localStorage.setItem('mc_key',JSON.stringify({salt:E.salt,jwk:await crypto.subtle.exportKey('jwk',key)}));else localStorage.removeItem('mc_key');
   $('pw').value='';apply(P);}catch(err){showLock('Wrong password, or no connection. Try again.');}finally{$('lbtn').disabled=false;}};
 $('lockbtn').onclick=e=>{e.preventDefault();localStorage.removeItem('mc_key');KEY=null;location.reload();};
+// ---- briefing player: Agenda's encrypted clip (briefing.enc) if it matches today's briefing date, else the device voice ----
+function prepAudioLater(){setTimeout(()=>KEY&&prepAudio(),0);}
+let BDATE='',AUDIO_OK=null,speaking=false,utt=null,spokenTxt='';
+const aud=$('aud'),fmtT=t=>isFinite(t)?Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0'):'';
+function setMode(clip){$('plabel').innerHTML=clip?'PLAY BRIEFING <small>· Agenda</small>':'PLAY BRIEFING <small>· device voice</small>';}
+async function prepAudio(){if(AUDIO_OK!==null)return AUDIO_OK;try{const r=await fetch('briefing.enc',{cache:'no-store'});if(!r.ok)throw 0;const E=await r.json();
+ if(E.date!==BDATE||E.salt!==KSALT)throw 0;const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(E.iv)},KEY,b64(E.ct));
+ if(aud.src)URL.revokeObjectURL(aud.src);aud.src=URL.createObjectURL(new Blob([pt],{type:E.mime||'audio/mp4'}));AUDIO_OK=true;}catch(e){AUDIO_OK=false;}setMode(AUDIO_OK);return AUDIO_OK;}
+aud.ontimeupdate=()=>{$('pfill').style.width=(aud.currentTime/aud.duration*100||0)+'%';$('ptime').textContent=fmtT(aud.duration-aud.currentTime);};
+aud.onloadedmetadata=()=>$('ptime').textContent=fmtT(aud.duration);
+aud.onplay=()=>$('play').textContent='❚❚';aud.onpause=aud.onended=()=>$('play').textContent='▶';
+$('play').onclick=async()=>{if(await prepAudio()){aud.paused?aud.play():aud.pause();return;}
+ const S=window.speechSynthesis;if(!S)return;
+ if(speaking&&!S.paused){S.pause();$('play').textContent='▶';return;}if(speaking&&S.paused){S.resume();$('play').textContent='❚❚';return;}
+ spokenTxt=$('brief').innerText;utt=new SpeechSynthesisUtterance(spokenTxt);utt.rate=1;
+ const v=S.getVoices().find(v=>/en-(US|GB)/.test(v.lang));if(v)utt.voice=v;
+ utt.onboundary=e=>{$('pfill').style.width=(e.charIndex/spokenTxt.length*100)+'%';};
+ utt.onend=utt.onerror=()=>{speaking=false;$('play').textContent='▶';$('pfill').style.width='0%';};
+ S.cancel();speaking=true;$('play').textContent='❚❚';S.speak(utt);};
+document.querySelector('.pbar').onclick=e=>{if(AUDIO_OK&&aud.duration){const r=e.currentTarget.getBoundingClientRect();aud.currentTime=(e.clientX-r.left)/r.width*aud.duration;}};
 load();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&unlocked)load();});
 function tick(){$('now').textContent=new Date().toLocaleString('en-US',{...CT,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).toUpperCase()+' CT';}tick();setInterval(tick,30000);
 // Get Jarvis: try the grokbot:// app link; if the page is still visible after 1.5 s, the app didn't open, so show a hint (no other action).

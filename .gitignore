@@ -7,3 +7,9 @@ team.json
 *.env
 shot*.png
 .lasthash
+*.m4a
+*.mp3
+*.wav
+*.aac
+*.ogg
+.audiohash
