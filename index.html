@@ -168,7 +168,7 @@ $('lockbtn').onclick=e=>{e.preventDefault();localStorage.removeItem('mc_key');KE
 function prepAudioLater(){setTimeout(()=>KEY&&prepAudio(),0);}
 let BDATE='',AUDIO_OK=null,speaking=false,utt=null,spokenTxt='';
 const aud=$('aud'),fmtT=t=>isFinite(t)?Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0'):'';
-function setMode(clip){$('plabel').innerHTML=clip?'PLAY BRIEFING <small>· Agenda</small>':'PLAY BRIEFING <small>· device voice</small>';}
+function setMode(clip){$('plabel').innerHTML=clip?'PLAY BRIEFING <small>· Jarvis</small>':'PLAY BRIEFING <small>· device voice</small>';}
 async function prepAudio(){if(AUDIO_OK!==null)return AUDIO_OK;try{const r=await fetch('briefing.enc',{cache:'no-store'});if(!r.ok)throw 0;const E=await r.json();
  if(E.date!==BDATE||E.salt!==KSALT)throw 0;const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(E.iv)},KEY,b64(E.ct));
  if(aud.src)URL.revokeObjectURL(aud.src);aud.src=URL.createObjectURL(new Blob([pt],{type:E.mime||'audio/mp4'}));AUDIO_OK=true;}catch(e){AUDIO_OK=false;}setMode(AUDIO_OK);return AUDIO_OK;}
