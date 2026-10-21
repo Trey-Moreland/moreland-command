@@ -6,3 +6,4 @@ team.json
 .env
 *.env
 shot*.png
+.lasthash
