@@ -89,7 +89,7 @@ body.locked>section,body.locked>footer,body.locked>.dock{visibility:hidden}
 <section class="panel"><h2>TEAM TASKS <span id="tcount"></span></h2><ol class="tasks" id="tasks"></ol></section>
 <section class="panel"><h2>NEXT 7 DAYS <span>OUTLOOK</span></h2><ul class="ev" id="events"></ul></section>
 <footer>J.A.R.V.I.S. · built by Trey Moreland &amp; team<br><span id="synced">Loading…</span><br><a href="#" id="lockbtn" style="color:var(--cy2)">Lock &amp; forget this device</a></footer>
-<nav class="dock"><a class="btn" href="https://outlook.live.com/calendar/" target="_blank" rel="noopener">📅 CALENDAR</a><a class="btn big" id="getj" href="grokbot://">💬 GET JARVIS</a></nav>
+<nav class="dock"><a class="btn" id="getcal" href="ms-outlook://events">📅 CALENDAR</a><a class="btn big" id="getj" href="grokbot://">💬 GET JARVIS</a></nav>
 <div class="scrim" id="scrim" hidden><div class="card" role="dialog" aria-modal="true"><button class="x" aria-label="Close">✕</button><h3 id="cn"></h3><div class="s" id="cs"></div><div class="r" id="cr"></div></div></div>
 <div class="toast" id="toast" hidden></div>
 <div class="lock" id="lock" hidden><form id="lform" class="card lk" autocomplete="on"><h3>ACCESS CONTROL</h3><div class="s">Moreland Command is locked.</div>
@@ -162,5 +162,7 @@ load();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&un
 function tick(){$('now').textContent=new Date().toLocaleString('en-US',{...CT,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).toUpperCase()+' CT';}tick();setInterval(tick,30000);
 // Get Jarvis: try the grokbot:// app link; if the page is still visible after 1.5 s, the app didn't open, so show a hint (no other action).
 $('getj').addEventListener('click',()=>{setTimeout(()=>{if(!document.hidden){const t=$('toast');t.textContent='If Grok Bot didn\u2019t open, open the Grok Bot app and choose Jarvis.';t.hidden=false;setTimeout(()=>t.hidden=true,5000);}},1500);});
+// Calendar: open the Outlook app's calendar (ms-outlook://events); if the page is still visible after 1.5 s, open Outlook on the web instead.
+$('getcal').addEventListener('click',()=>{setTimeout(()=>{if(!document.hidden)location.href='https://outlook.live.com/calendar/';},1500);});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
